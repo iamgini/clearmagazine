@@ -1,0 +1,76 @@
+{{ define "main" }}
+  <section class="section-sm pb-0">
+    <div class="container">
+      <div
+        class="row border-border dark:border-darkmode-border justify-center border-b pb-14">
+        <div class="lg:col-8 text-center">
+          {{ $image:= .Params.image }}
+          {{ if $image }}
+            {{ partial "image" (dict
+                "Src" ($image | relURL)
+                "Alt" .Title
+                "class" "rounded-full aspect-square object-cover object-center mx-auto"
+                "width" "200"
+                "height" "200"
+            ) }}
+          {{ else if .Params.Email }}
+            <img
+              class="mx-auto"
+              alt="{{ .Title }}"
+              height="200"
+              width="200"
+              src="https://www.gravatar.com/avatar/{{ md5 .Params.email }}?s=128&pg&d=identicon" />
+          {{ end }}
+          <h1 class="h3 mt-10">{{ .Title }}</h1>
+          <div class="content mt-6">
+            {{ .Content }}
+          </div>
+          <ul class="social-icons ml-4 mt-10 text-center">
+            {{ range .Params.social }}
+              <li>
+                <a
+                  href="{{ .link | safeURL }}"
+                  target="_blank"
+                  rel="noopener nofollow">
+                  <span class="sr-only">{{ .title }}</span>
+                  <i class="{{ .icon }}"></i>
+                </a>
+              </li>
+            {{ end }}
+          </ul>
+        </div>
+      </div>
+
+      <div class="row pb-16 pt-14">
+      {{ $all := where site.RegularPages "Section" "blog" }}
+      {{ $name := .Title }}
+
+      {{/* posts where front matter has author: "Name" */}}
+      {{ $byAuthor := where $all "Params.author" "==" $name }}
+
+      {{/* posts where front matter has authors: ["Name", ...] */}}
+      {{ $byAuthorsList := where $all "Params.authors" "intersect" (slice $name) }}
+
+      {{/* combine and de-dupe */}}
+      {{ $posts := (union $byAuthor $byAuthorsList) | uniq }}
+
+      {{/* newest first */}}
+      {{ $sorted := sort $posts "Date" "desc" }}
+
+      {{/* show only first 21 */}}
+      {{ range first 21 $sorted }}
+        <div class="md:col-6 lg:col-4 mb-12">
+          {{ partial "components/blog-card" . }}
+        </div>
+      {{ end }}
+    </div>
+    {{ if gt (len $sorted) 21 }}
+        <div class="w-full text-center mt-4">
+          <span class="text-sm opacity-70">and more...</span>
+        </div>
+      {{ end }}
+
+
+    </div>
+  </section>
+{{ end }}

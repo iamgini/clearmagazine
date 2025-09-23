@@ -1,0 +1,248 @@
+{{ define "main" }}
+  <section class="section pt-7">
+    <div class="container">
+
+      {{/* Compute: only show ToC if it has items AND toc != false */}}
+      {{ $tocHTML := .TableOfContents }}
+      {{ $hasItems := gt (len (findRE "<li" $tocHTML)) 0 }}
+      {{ $showTOC := and $hasItems (ne .Params.toc false) }}
+
+      <div class="row justify-center">
+        {{/* ===================== MAIN ARTICLE (centered, fixed width) ===================== */}}
+        <article class="w-full lg:col-9 xl:col-8 mx-auto">
+
+          <h1 class="h2 mb-3">
+            {{ .Title }}
+          </h1>
+
+          {{/* --- META (author • categories • date) --- */}}
+          <ul class="mb-6 flex flex-wrap items-center gap-4 text-sm">
+
+            {{/* --- Resolve author name & URL --- */}}
+            {{ $authorName := or .Params.author .Params.Author }}
+            {{ $authorSlug := $authorName | urlize }}
+            {{ $authorURL  := printf "authors/%s/" $authorSlug | relLangURL }}
+
+            {{/* --- Try images in this order: post -> author page -> site default --- */}}
+            {{ $authorImg := .Params.authorimage }}
+            {{ if not $authorImg }}
+              {{ with site.GetPage (printf "authors/%s" $authorSlug) }}
+                {{ $authorImg = or .Params.image (or .Params.avatar .Params.photo) }}
+              {{ end }}
+            {{ end }}
+            {{ if not $authorImg }}
+              {{ $authorImg = site.Params.defaultAuthorImage }}
+            {{ end }}
+
+            <li class="flex items-center gap-2">
+              {{ with $authorImg }}
+                <img src="{{ . | relURL }}" alt="{{ $authorName }}" class="h-8 w-8 rounded-full object-cover" />
+              {{ end }}
+              <a href="{{ $authorURL }}" class="font-medium">
+                {{ $authorName }}
+              </a>
+            </li>
+
+            {{ $categories := .Params.categories }}
+            {{ if $categories }}
+              <li class="flex items-center gap-1">
+                <i class="fa-regular fa-folder mr-1"></i>
+                {{ range $i, $p := $categories }}
+                  <a href="{{ `categories/` | relLangURL }}{{ . | urlize | lower }}/">
+                    {{ . | humanize }}{{ if ne $i (sub (len $categories) 1) }},{{ end }}
+                  </a>
+                {{ end }}
+              </li>
+            {{ end }}
+
+            <li class="flex items-center gap-1">
+              <i class="fa-regular fa-clock mr-1"></i>
+              {{ time.Format ":date_long" .PublishDate }}
+            </li>
+          </ul>
+
+          {{/* --- HERO IMAGE AFTER META --- */}}
+          {{ $image:= .Params.image }}
+          {{ if $image }}
+            <div class="mb-10">
+              {{ partial "image" (dict "Src" ($image | relURL) "Context" .Page "Alt" .Title "Class" "w-full rounded") }}
+            </div>
+          {{ end }}
+
+
+
+          <div class="content mb-10">
+            {{ .Content }}
+          </div>
+
+          <!-- Author box start -->
+          {{/* Author Box */}}
+          {{ if .Params.author }}
+            {{ $authorPage := site.GetPage (printf "/authors/%s" (.Params.author | urlize)) }}
+            {{ if $authorPage }}
+              <div class="border border-border dark:border-darkmode-border rounded-lg p-6 mt-12 flex items-center">
+                {{ $image := $authorPage.Params.image }}
+                {{ if $image }}
+
+                  <img
+                    src="{{ $image | relURL }}"
+                    alt="{{ $authorPage.Title }}"
+                    class="w-20 h-20 rounded-full object-cover mr-6"
+                    width="250"
+                    height="250"
+                    />
+
+                {{ end }}
+                <div>
+                  <a href="{{ $authorPage.RelPermalink }}" >
+                    <h3 class="font-bold text-lg mb-2">{{ $authorPage.Title }}</h3>
+                  </a>
+                  <p class="text-sm opacity-80">
+                    {{ $authorPage.Content | plainify }}
+                  </p>
+                </div>
+              </div>
+            {{ end }}
+          {{ end }}
+          <br>
+          <!-- Author box end -->
+
+
+          {{ "<!-- markdown -->" | safeHTML }}
+          {{ `{{< notice "note" >}}Disclaimer: The views expressed and the content shared in all published articles on this website are solely those of the respective authors, and they do not necessarily reflect the views of the author’s employer or the techbeatly platform. We strive to ensure the accuracy and validity of the content published on our website. However, we cannot guarantee the absolute correctness or completeness of the information provided. It is the responsibility of the readers and users of this website to verify the accuracy and appropriateness of any information or opinions expressed within the articles. If you come across any content that you believe to be incorrect or invalid, please contact us immediately so that we can address the issue promptly.{{< /notice >}}` | markdownify }}
+
+
+          {{/* ===================== TAGS (pills) ===================== */}}
+          {{ $tags:= .Params.tags }}
+          {{ if $tags }}
+            <div class="mb-10">
+              <h5 class="mb-3">{{ T "tags" }} :</h5>
+              <ul class="flex flex-wrap">
+                {{ range $i,$p:= $tags }}
+                  <li>
+                    <a
+                      class="m-1 inline-block rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200"
+                      href="{{ `tags/` | relLangURL }}{{ . | urlize | lower }}/">
+                      {{ . | humanize }}
+                    </a>
+                  </li>
+                {{ end }}
+              </ul>
+            </div>
+          {{ end }}
+
+          {{/* ===================== SHARE ===================== */}}
+          <div class="mb-10 flex items-center lg:justify-end">
+            <h5 class="mr-3">{{ T "share" }} :</h5>
+            {{ partial "social-share" (dict "Context" . "Class" "share-icons" "Title" .Title "Whatsapp" false "Telegram" false "Linkedin" false "Pinterest" false "Tumblr" false "Vk" false "Reddit" false) }}
+          </div>
+
+          {{/* ===================== PREV/NEXT (small thumbnails) ===================== */}}
+          {{ $prev := .PrevInSection }}
+          {{ $next := .NextInSection }}
+          {{ if or $prev $next }}
+            <nav class="mt-16 grid grid-cols-1 gap-6 border-t pt-8 md:grid-cols-2">
+              {{ if $prev }}
+                <a href="{{ $prev.RelPermalink }}" class="group flex items-center gap-3 rounded-lg bg-light p-3 hover:bg-primary hover:text-white dark:bg-darkmode-light dark:hover:bg-darkmode-primary">
+                  {{ with $prev.Params.image }}
+                    <img src="{{ . | relURL }}" alt="{{ $prev.Title }}" class="h-12 w-12 flex-none rounded-full object-cover" />
+                  {{ end }}
+                  <div class="min-w-0">
+                    <div class="text-xs opacity-70">← Previous</div>
+                    <div class="truncate font-medium">{{ $prev.Title }}</div>
+                  </div>
+                </a>
+              {{ end }}
+
+              {{ if $next }}
+                <a href="{{ $next.RelPermalink }}" class="group flex items-center gap-3 rounded-lg bg-light p-3 hover:bg-primary hover:text-white dark:bg-darkmode-light dark:hover:bg-darkmode-primary md:justify-end">
+                  <div class="min-w-0 text-right">
+                    <div class="text-xs opacity-70">Next →</div>
+                    <div class="truncate font-medium">{{ $next.Title }}</div>
+                  </div>
+                  {{ with $next.Params.image }}
+                    <img src="{{ . | relURL }}" alt="{{ $next.Title }}" class="h-12 w-12 flex-none rounded-full object-cover" />
+                  {{ end }}
+                </a>
+              {{ end }}
+            </nav>
+          {{ end }}
+<!--
+          {{/* ===================== COMMENTS ===================== */}}
+          {{ if site.Config.Services.Disqus.Shortname }}
+            <div class="mt-20">
+              <div id="disqus_thread"></div>
+              <script>
+                (function() {
+                  var d = document, s = d.createElement('script');
+                  s.src = 'https://rovervibes.disqus.com/embed.js';
+                  s.setAttribute('data-timestamp', +new Date());
+                  (d.head || d.body).appendChild(s);
+                })();
+              </script>
+              <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+              {{/* {{ template "_internal/disqus.html" . }} */}}
+            </div>
+          {{ end }} -->
+
+          {{/* ===================== Giscus COMMENTS ===================== */}}
+          {{/* ===================== https://www.patrickthurmond.com/blog/2023/12/11/commenting-is-available-now-thanks-to-giscus===================== */}}
+          {{ if ne .Params.comments false }}
+            <div class="mt-20">
+              <div id="giscus_thread"></div>
+                <script src="https://giscus.app/client.js"
+                data-repo="techbeatly/techbeatly-discussions"
+                data-repo-id="R_kgDOPpsGIw"
+                data-category="Blog Comments"
+                data-category-id="DIC_kwDOPpsGI84Cu9Sc"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="dark"
+                data-lang="en"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async>
+                </script>
+            </div>
+          {{ end }}
+        </article>
+
+
+
+        {{/* ===================== RIGHT SIDEBAR (ToC on xl) ===================== */}}
+        {{ if $showTOC }}
+          <aside class="hidden xl:block xl:col-3">
+            <div class="sticky top-24 text-sm max-h-[70vh] overflow-auto">
+              <div class="mb-3 text-xs font-semibold uppercase tracking-wide opacity-70">
+                ON THIS PAGE
+              </div>
+              <div class="prose-sm toc space-y-2">
+                {{ $tocHTML | safeHTML }}
+              </div>
+            </div>
+          </aside>
+        {{ end }}
+      </div>
+
+      {{/* ========= RELATED POSTS =========== */}}
+      {{ $related := .Site.RegularPages.Related . | first 10 }}
+      {{ $related = $related | shuffle | first 3 }}
+      {{ with $related }}
+        <div class="section pb-0">
+          <h2 class="h3 mb-12">{{ T "related_posts" }}</h2>
+          <div class="row">
+            {{ range . }}
+              <div class="lg:col-4 md:col-6 mb-14">
+                {{ partial "components/blog-card" . }}
+              </div>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
+    </div>
+  </section>
+
+{{ end }}

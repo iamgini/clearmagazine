@@ -1,0 +1,36 @@
+{{- $href   := .Get "href"   | default "#" -}}
+{{- $label  := .Get "label"  | default "Button" -}}
+{{- $size   := .Get "size"   | default "md" -}}
+{{- $align  := .Get "align"  | default "left" -}}
+{{- $newtab := .Get "newtab" | default "false" -}}
+{{- $color  := .Get "color"  | default "red" -}}   {{/* tailwind color name */}}
+{{- $bghex  := .Get "bg"                         -}} {{/* e.g. #ff2d3d */}}
+
+{{/* alignment wrapper */}}
+{{- $wrap := "flex justify-start" -}}
+{{- if eq $align "center" }}{{ $wrap = "flex justify-center" }}{{ end -}}
+{{- if eq $align "right"  }}{{ $wrap = "flex justify-end"  }}{{ end -}}
+
+{{/* sizes */}}
+{{- $sizeCls := "px-6 py-3 text-sm" -}}
+{{- if eq $size "sm" }}{{ $sizeCls = "px-4 py-2 text-xs" }}{{ end -}}
+{{- if eq $size "lg" }}{{ $sizeCls = "px-8 py-3.5 text-base" }}{{ end -}}
+
+{{/* tailwind color sets (only used if bghex is empty) */}}
+{{- $colorCls := "bg-red-600 hover:bg-red-700 focus:ring-red-400" -}}
+{{- if eq $color "rose"    }}{{ $colorCls = "bg-rose-600 hover:bg-rose-700 focus:ring-rose-400" }}{{ end -}}
+{{- if eq $color "blue"    }}{{ $colorCls = "bg-blue-600 hover:bg-blue-700 focus:ring-blue-400" }}{{ end -}}
+{{- if eq $color "emerald" }}{{ $colorCls = "bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-400" }}{{ end -}}
+
+{{- $base := (printf "inline-flex items-center justify-center rounded-full %s font-extrabold uppercase tracking-wide text-white shadow-sm transition focus:outline-none focus:ring-2 focus:ring-offset-2" $sizeCls) -}}
+
+<div class="{{ $wrap }}">
+  <a href="{{ $href }}"
+     class="{{ $base }} {{ if not $bghex }}{{ $colorCls }}{{ end }}"
+     {{ if $bghex }}style="background: {{ $bghex }};"
+        onmouseover="this.style.filter='brightness(0.93)';"
+        onmouseout="this.style.filter='none';"{{ end }}
+     {{ if eq $newtab "true" }}target="_blank" rel="noopener"{{ end }}>
+    {{ $label }}
+  </a>
+</div>

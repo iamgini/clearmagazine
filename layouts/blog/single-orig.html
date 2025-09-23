@@ -1,0 +1,152 @@
+{{ define "main" }}
+  <section class="section pt-7">
+    <div class="container">
+      <div class="row justify-center">
+        <article class="lg:col-10">
+          {{ $image:= .Params.image }}
+          {{ if $image }}
+            <div class="mb-10">
+              {{ partial "image" (dict "Src" ($image | relURL) "Context" .Page "Alt" .Title "Class" "w-full rounded") }}
+            </div>
+          {{ end }}
+          <h1 class="h2 mb-4">
+            {{ .Title }}
+          </h1>
+          <ul class="mb-4">
+            <li class="mr-4 inline-block">
+              <a
+                href="{{ `authors/` | relLangURL }}{{ .Params.Author | urlize }}/">
+                <i class="fa-regular fa-circle-user mr-2"></i
+                >{{ .Params.author }}
+              </a>
+            </li>
+            {{ $categories:= .Params.categories }}
+            {{ if $categories }}
+              <li class="mr-4 inline-block">
+                <i class="fa-regular fa-folder mr-2"></i>
+                {{ range $i,$p:= $categories }}
+                  <a
+                    href="{{ `categories/` | relLangURL }}{{ . | urlize | lower }}/"
+                    class=""
+                    >{{ . | humanize }}{{ if ne $i (sub (len $categories) 1) }}
+                      {{ "," }}
+                    {{ end }}
+                  </a>
+                {{ end }}
+              </li>
+            {{ end }}
+            <li class="mr-4 inline-block">
+              <i class="fa-regular fa-clock mr-2"></i>
+              {{ time.Format ":date_long" .PublishDate }}
+            </li>
+          </ul>
+          <div class="content mb-10">
+            {{/* {{ partial "toc.html" (dict "Class" "blog" "Collapsed" false "TableOfContents" .TableOfContents ) }} */}}
+            {{ .Content }}
+          </div>
+          <div class="row items-start justify-between">
+            {{ $tags:= .Params.tags }}
+            {{ if $tags }}
+              <div class="lg:col-6 mb-10 flex items-center lg:mb-0">
+                <h5 class="mr-3">{{ T "tags" }} :</h5>
+                <ul>
+                  {{ range $i,$p:= $tags }}
+                    <li class="inline-block">
+                      <a
+                        class="bg-light hover:bg-primary dark:bg-darkmode-light dark:hover:bg-darkmode-primary dark:hover:text-text-dark m-1 block rounded px-3 py-1 hover:text-white"
+                        href="{{ `tags/` | relLangURL }}{{ . | urlize | lower }}/">
+                        {{ . | humanize }}
+                      </a>
+                    </li>
+                  {{ end }}
+                </ul>
+              </div>
+            {{ end }}
+            <div class="lg:col-6 flex items-center lg:justify-end">
+              <h5>{{ T "share" }} :</h5>
+              {{ partial "social-share" (dict "Context" . "Class" "share-icons" "Title" .Title "Whatsapp" false "Telegram" false "Linkedin" false "Pinterest" false "Tumblr" false "Vk" false "Reddit" false) }}
+            </div>
+          </div>
+
+          <!-- Previous/Next navigation with small thumbnails -->
+          {{ $prev := .PrevInSection }}
+          {{ $next := .NextInSection }}
+
+          {{ if or $prev $next }}
+            <nav class="mt-16 grid grid-cols-1 gap-6 border-t pt-8 md:grid-cols-2">
+              {{ if $prev }}
+                <a href="{{ $prev.RelPermalink }}" class="group flex items-center gap-3 rounded-lg bg-light p-3 hover:bg-primary hover:text-white dark:bg-darkmode-light dark:hover:bg-darkmode-primary">
+                  {{ with $prev.Params.image }}
+                    <img src="{{ . | relURL }}" alt="{{ $prev.Title }}" class="h-12 w-12 flex-none rounded-full object-cover" />
+                  {{ end }}
+                  <div class="min-w-0">
+                    <div class="text-xs opacity-70">← Previous</div>
+                    <div class="truncate font-medium">{{ $prev.Title }}</div>
+                  </div>
+                </a>
+              {{ end }}
+
+              {{ if $next }}
+                <a href="{{ $next.RelPermalink }}" class="group flex items-center gap-3 rounded-lg bg-light p-3 hover:bg-primary hover:text-white dark:bg-darkmode-light dark:hover:bg-darkmode-primary md:justify-end">
+                  <div class="min-w-0 text-right">
+                    <div class="text-xs opacity-70">Next →</div>
+                    <div class="truncate font-medium">{{ $next.Title }}</div>
+                  </div>
+                  {{ with $next.Params.image }}
+                    <img src="{{ . | relURL }}" alt="{{ $next.Title }}" class="h-12 w-12 flex-none rounded-full object-cover" />
+                  {{ end }}
+                </a>
+              {{ end }}
+            </nav>
+          {{ end }}
+
+
+          <!-- comments -->
+          {{ if site.Config.Services.Disqus.Shortname }}
+            <div class="mt-20">
+              <div id="disqus_thread"></div>
+              <script>
+                  /**
+                  *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+                  /*
+                  var disqus_config = function () {
+                  this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                  this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                  };
+                  */
+                  (function() { // DON'T EDIT BELOW THIS LINE
+                  var d = document, s = d.createElement('script');
+                  s.src = 'https://rovervibes.disqus.com/embed.js';
+                  s.setAttribute('data-timestamp', +new Date());
+                  (d.head || d.body).appendChild(s);
+                  })();
+              </script>
+              <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+              {{/* {{ template "_internal/disqus.html" . }} */}}
+            </div>
+          {{ end }}
+        </article>
+      </div>
+
+
+
+      <!-- Related posts -->
+      {{ $related := .Site.RegularPages.Related . | first 10 }}
+      {{ $related = $related | shuffle | first 3 }}
+      {{ with $related }}
+        <div class="section pb-0">
+          <h2 class="h3 mb-12">{{ T "related_posts" }}</h2>
+          <div class="row">
+            {{ range . }}
+              <div class="lg:col-4 md:col-6 mb-14">
+                {{ partial "components/blog-card" . }}
+              </div>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
+    </div>
+  </section>
+{{ end }}

@@ -1,0 +1,26 @@
+{{ define "main" }}
+  {{ partial "taxonomy-header" . }}
+
+  <section class="section">
+    <div class="container">
+      <div class="row">
+        {{/* Take only blog posts on this taxonomy term page */}}
+        {{ $onlyBlog := where .Pages "Section" "blog" }}
+
+        {{/* Newest first */}}
+        {{ $sorted := sort $onlyBlog "Date" "desc" }}
+
+        {{/* Paginate (uses site paginate config unless you pass a number) */}}
+        {{ $paginator := .Paginate $sorted 12 }}
+
+        {{ range $paginator.Pages }}
+          <div class="md:col-6 lg:col-4 mb-14">
+            {{ partial "components/blog-card" . }}
+          </div>
+        {{ end }}
+      </div>
+
+      {{ partial "components/pagination.html" . }}
+    </div>
+  </section>
+{{ end }}

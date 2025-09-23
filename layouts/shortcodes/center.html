@@ -1,0 +1,2 @@
+{{ $class := .Get "class" | default "text-center leading-relaxed" }}
+<div class="{{ $class }}">{{ .Inner | markdownify }}</div>

@@ -1,0 +1,14 @@
+<header class="section-sm pt-6 pb-0" style="padding-top: 40px;">
+  <div class="container">
+    <div class="row justify-center">
+      <!-- Match the article column exactly -->
+      <div class="w-full lg:col-9 xl:col-8 mx-auto">
+        <h1 class="mb-2 text-left">{{ .Title }}</h1>
+        {{ with .Params.subtitle }}
+          <p class="text-left text-muted">{{ . }}</p>
+        {{ end }}
+        {{/* Add meta/breadcrumbs here if you want, but keep it left-aligned */}}
+      </div>
+    </div>
+  </div>
+</header>

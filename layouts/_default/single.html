@@ -1,0 +1,14 @@
+{{ define "main" }}
+  {{ partial "page-header" . }}
+  <section class="section-sm" style="padding-top: 25px;">
+    <div class="container">
+      <div class="row justify-center">
+        <article class="w-full lg:col-9 xl:col-8 mx-auto">
+          <div class="content">
+            {{ .Content }}
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+{{ end }}
