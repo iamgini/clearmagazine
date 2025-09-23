@@ -121,6 +121,37 @@ https://github.com/zeon-studio/hugoplate/assets/58769763/c260c0ae-91be-42ce-b8db
 
 ---
 
+## How to test it in your theme as Hugo Modules
+
+```shell
+# 1. Clone this project
+git clone github.com/iamgini/clearmagazine
+
+# 2. goto the hugo project path
+cd /<path-to-your-directory>/<hugo-project>
+
+# 3. add the following in hugo.toml or config/_default/hugo.toml
+
+[module]
+  [[module.imports]]
+    path = "github.com/iamgini/clearmagazine"
+    version = "v0.1.0"   # use your latest tag as needed
+
+# 4. Export environment variable for local folder testing
+# use the correct path where you cloned theme repo
+export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../clearmagazine"
+
+
+# Add the theme import
+# config/_default/hugo.toml
+# [module]
+#   [[module.imports]]
+#     path = "github.com/iamgini/clearmagazine"
+#     version = "v0.1.0"     # keep this for CI; we’ll override locally
+```
+
+---
+
 ## 📝 Customization
 
 This template has been designed with a lot of customization options in mind. You can customize almost anything you want, including:
