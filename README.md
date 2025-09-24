@@ -121,38 +121,85 @@ https://github.com/zeon-studio/hugoplate/assets/58769763/c260c0ae-91be-42ce-b8db
 
 ---
 
-## How to test it in your theme as Hugo Modules
+## Update and tag the theme
+
+Theme repo (clearmagazine)
+
+Do your edits and test locally (with the env override).
+
+Commit the changes.
 
 ```shell
-# 1. Clone this project
+git add -A
+git commit -m "Tweak cards, fix center shortcode, etc."
+```
+
+Create an annotated tag on that commit and push both commits and tags.
+
+```
+git tag -a v0.1.3 -m "v0.1.3: card tweaks + shortcode fix"
+git push
+git push --tags
+```
+
+That guarantees the tag points to the exact code you tested.
+
+Don’t tag before committing; you’ll end up tagging the previous commit.
+
+
+## How to test theme in your site as Hugo Modules
+
+1. Clone this project
+
+```shell
 git clone github.com/iamgini/clearmagazine
+```
 
-# 2. goto the hugo project path
+2. goto the hugo project path
+
+```shell
 cd /<path-to-your-directory>/<hugo-project>
+```
 
-# 3. add the following in hugo.toml or config/_default/hugo.toml
-[module]
-  [[module.imports]]
-    path = "github.com/iamgini/clearmagazine"
-    version = "v0.1.0"   # use your latest tag as needed
+3. Add and Pin the version in `config/_default/module.toml`:
 
-# 4. Update theme hugo.toml and ensure no theme is mentioned!
+```ini
+.
+.
+.
+[[imports]]
+path = "github.com/iamgini/clearmagazine"
+version = "v0.1.2"
+.
+.
+.
+```
 
+4. Sync lockfiles
+
+```shell
+hugo mod get github.com/iamgini/clearmagazine@v0.1.2
+hugo mod tidy
+git add config/_default/module.toml go.mod go.sum
+git commit -m "Pin clearmagazine v0.1.2"
+git push
+```
+
+5. Update theme `hugo.toml` and ensure no theme is mentioned!
+
+```ini
 # theme = "hugoplate"
+```
+6. Local testing
 
-# 4. Export environment variable for local folder testing
+Export environment variable for local folder testing
+
+```shell
 # use the correct path where you cloned theme repo
 export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../clearmagazine"
-
-
-
-# Add the theme import
-# config/_default/hugo.toml
-# [module]
-#   [[module.imports]]
-#     path = "github.com/iamgini/clearmagazine"
-#     version = "v0.1.0"     # keep this for CI; we’ll override locally
 ```
+
+Note: You don’t need the `[module] [[module.imports]]` block in `hugo.toml` if you’re using `config/_default/module.toml`. It’s redundant.
 
 ---
 
