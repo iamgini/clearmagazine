@@ -178,10 +178,10 @@ version = "v0.1.2"
 4. Sync lockfiles
 
 ```shell
-hugo mod get github.com/iamgini/clearmagazine@v0.1.2
+hugo mod get github.com/iamgini/clearmagazine@v0.1.5
 hugo mod tidy
-git add config/_default/module.toml go.mod go.sum
-git commit -m "Pin clearmagazine v0.1.2"
+git add -A
+git commit -m "Pin clearmagazine v0.1.5"
 git push
 ```
 
