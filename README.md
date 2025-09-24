@@ -136,8 +136,9 @@ cd /<path-to-your-directory>/<hugo-project>
     path = "github.com/iamgini/clearmagazine"
     version = "v0.1.0"   # use your latest tag as needed
 
-# 4. Update theme hugo.toml
-theme = "hugoplate"
+# 4. Update theme hugo.toml and ensure no theme is mentioned!
+
+# theme = "hugoplate"
 
 # 4. Export environment variable for local folder testing
 # use the correct path where you cloned theme repo
