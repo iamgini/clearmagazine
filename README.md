@@ -132,13 +132,13 @@ Commit the changes.
 ```shell
 git add -A
 git commit -m "Tweak cards, fix center shortcode, etc."
+git push
 ```
 
 Create an annotated tag on that commit and push both commits and tags.
 
-```
+```shell
 git tag -a v0.1.3 -m "v0.1.3: card tweaks + shortcode fix"
-git push
 git push --tags
 ```
 
