@@ -196,7 +196,7 @@ Export environment variable for local folder testing
 
 ```shell
 # use the correct path where you cloned theme repo
-export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../clearmagazine"
+export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../../clearmagazine"
 ```
 
 Note: You don’t need the `[module] [[module.imports]]` block in `hugo.toml` if you’re using `config/_default/module.toml`. It’s redundant.

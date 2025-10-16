@@ -1,0 +1,40 @@
+{{- /* Derived metadata */ -}}
+{{- $isHome := .IsHome -}}
+{{- $title := .Title | default site.Title -}}
+{{- $siteTitle := site.Title -}}
+{{- $fullTitle := cond $isHome $siteTitle (printf "%s | %s" $title $siteTitle) -}}
+{{- $desc := cond (ne .Description "") .Description site.Params.description -}}
+{{- $author := or .Params.author site.Params.author -}}
+{{- $image := or .Params.image site.Params.defaultImage -}}
+{{- $imageAbs := cond (strings.HasPrefix $image "http") $image ($image | absURL) -}}
+{{- $url := .Permalink -}}
+{{- $type := cond $isHome "website" "article" -}}
+{{- $twitterSite := site.Params.twitterSite -}}
+{{- $twitterCreator := or .Params.twitterCreator site.Params.twitterCreator -}}
+
+<title>{{ $fullTitle }}</title>
+
+{{- if $desc }}<meta name="description" content="{{ $desc }}" />{{ end }}
+{{- if $author }}<meta name="author" content="{{ $author }}" />{{ end }}
+<link rel="canonical" href="{{ $url }}" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="{{ $title }}" />
+{{- if $desc }}<meta property="og:description" content="{{ $desc }}" />{{ end }}
+<meta property="og:type" content="{{ $type }}" />
+<meta property="og:url" content="{{ $url }}" />
+{{- if $image }}<meta property="og:image" content="{{ $imageAbs }}" />{{ end }}
+<meta property="og:site_name" content="{{ $siteTitle }}" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="{{ if $image }}summary_large_image{{ else }}summary{{ end }}" />
+{{- if $twitterSite }}<meta name="twitter:site" content="{{ $twitterSite }}" />{{ end }}
+{{- if $twitterCreator }}<meta name="twitter:creator" content="{{ $twitterCreator }}" />{{ end }}
+<meta name="twitter:title" content="{{ $title }}" />
+{{- if $desc }}<meta name="twitter:description" content="{{ $desc }}" />{{ end }}
+{{- if $image }}<meta name="twitter:image" content="{{ $imageAbs }}" />{{ end }}
+
+<!-- Optional noindex support -->
+{{- if or .Params.noindex site.Params.noindex }}
+<meta name="robots" content="noindex, nofollow" />
+{{- end }}
