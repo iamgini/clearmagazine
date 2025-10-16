@@ -203,6 +203,30 @@ Note: You don’t need the `[module] [[module.imports]]` block in `hugo.toml` if
 
 ---
 
+## SEO
+
+Make sure your params/front-matter are set
+
+In config/_default/params.toml (or hugo.toml):
+
+```shell
+[params]
+description    = "Techbeatly — practical guides on DevOps, automation, and cloud."
+author         = "Techbeatly"
+defaultImage   = "/images/default-og.jpg"
+twitterSite    = "@techbeatly"
+twitterCreator = "@iamgini"
+```
+
+On the page front-matter (e.g. content/ansible-windows/index.md):
+
+```yaml
+title: "Ansible Automation for Windows"
+description: "Automate Windows with Ansible: WinRM setup, modules, and playbook patterns."
+author: "Gineesh Madapparambath"
+image: "/images/tb-uploads/2022/01/ansible-windows-techbeatly.png"
+```
+
 ## 📝 Customization
 
 This template has been designed with a lot of customization options in mind. You can customize almost anything you want, including:
