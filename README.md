@@ -178,7 +178,7 @@ version = "v0.1.2"
 4. Sync lockfiles
 
 ```shell
-hugo mod get github.com/iamgini/clearmagazine@v0.1.6
+hugo mod get github.com/iamgini/clearmagazine@v0.1.7
 hugo mod tidy
 git add -A
 git commit -m "Pin clearmagazine v0.1.6"

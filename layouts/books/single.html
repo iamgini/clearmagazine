@@ -1,0 +1,116 @@
+{{ define "main" }}
+  {{ $p := . }}
+  {{ $bg := .Params.book_background }}
+
+  {{ if $bg }}
+    <section class="section pt-12 pb-10 relative">
+      {{ partial "image" (dict
+        "Src" $bg
+        "Alt" (printf "%s background" .Title)
+        "class" "absolute inset-0 w-full h-full object-cover opacity-15"
+        "Loading" "eager"
+        "DisplayXL" "1600x"
+      ) }}
+      <div class="container relative">
+        <div class="row justify-center">
+          <div class="lg:col-8 md:col-10 text-center">
+            <h1 class="mb-2 text-h2 lg:text-h1">{{ .Title }}</h1>
+            {{ with .Params.subtitle }}
+              <p class="text-lg text-muted">{{ . }}</p>
+            {{ end }}
+          </div>
+        </div>
+      </div>
+    </section>
+  {{ else }}
+    <section class="section pt-12 pb-4">
+      <div class="container">
+        <h1 class="mb-2 text-h2 lg:text-h1 text-center">{{ .Title }}</h1>
+        {{ with .Params.subtitle }}
+          <p class="text-lg text-muted text-center">{{ . }}</p>
+        {{ end }}
+      </div>
+    </section>
+  {{ end }}
+
+  <section class="section pt-4">
+    <div class="container">
+      <div class="row items-start">
+        <!-- Left: Cover + CTAs -->
+        <div class="lg:col-4 md:col-5 col-12 mb-8">
+          {{ with .Params.book_image }}
+            <div class="rounded-2xl shadow p-4 bg-white">
+              {{ partial "image" (dict
+                "Src" .
+                "Alt" ($p.Title | printf "%s cover")
+                "class" "w-full object-contain"
+                "DisplayXL" "800x"
+                "Loading" "eager"
+              ) }}
+            </div>
+          {{ end }}
+
+          {{ with .Params.book_links }}
+            <div class="mt-6 space-y-3">
+              {{ range . }}
+                <a class="btn btn-primary w-full text-center" href="{{ .url }}" target="_blank" rel="noopener">
+                  {{ .name }}
+                </a>
+              {{ end }}
+            </div>
+          {{ end }}
+        </div>
+
+        <!-- Right: Content -->
+        <div class="lg:col-8 md:col-7 col-12">
+          {{ with .Params.meta_description }}
+            <p class="text-muted mb-6">{{ . }}</p>
+          {{ end }}
+
+          <div class="content mb-10">
+            {{ .Content }}
+          </div>
+
+          {{ with .Params.authors }}
+            <h3 class="mb-4">About the author{{ if gt (len .) 1 }}s{{ end }}</h3>
+            <div class="space-y-8">
+              {{ range . }}
+                <div class="flex gap-4 items-start">
+                  {{ with .image }}
+                    {{ partial "image" (dict
+                      "Src" .
+                      "Alt" "Author photo"
+                      "class" "w-[72px] h-[72px] rounded-full object-cover"
+                      "DisplayXL" "144x"
+                      "Loading" "lazy"
+                    ) }}
+                  {{ end }}
+                  <div>
+                    <p class="font-semibold">{{ .name }}</p>
+                    {{ with .descriptions }}
+                      {{ range . }}
+                        <p class="text-muted">{{ . | markdownify }}</p>
+                      {{ end }}
+                    {{ end }}
+                  </div>
+                </div>
+              {{ end }}
+            </div>
+          {{ end }}
+
+          {{ with .Params.faq }}
+            <h3 class="mt-10 mb-4">FAQ</h3>
+            <div class="space-y-4">
+              {{ range . }}
+                <details class="rounded-lg border p-4">
+                  <summary class="font-medium cursor-pointer">{{ .q }}</summary>
+                  <div class="mt-2 text-muted">{{ .a | markdownify }}</div>
+                </details>
+              {{ end }}
+            </div>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </section>
+{{ end }}

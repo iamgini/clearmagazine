@@ -1,0 +1,76 @@
+{{ define "main" }}
+
+{{/* Banner/header for the books list page */}}
+{{ $bg := .Params.banner.image }}
+
+{{ if $bg }}
+  <section class="section pt-12 pb-10 relative">
+    {{ partial "image" (dict
+      "Src" $bg
+      "Alt" (printf "%s background" .Title)
+      "class" "absolute inset-0 w-full h-full object-cover opacity-15"
+      "Loading" "eager"
+      "DisplayXL" "1600x"
+    ) }}
+    <div class="container relative">
+      <div class="row justify-center">
+        <div class="lg:col-8 md:col-10 text-center">
+          <h1 class="mb-2 text-h2 lg:text-h1">{{ .Params.banner.title | default .Title | markdownify }}</h1>
+          {{ with .Params.banner.content }}
+            <p class="text-lg text-muted">{{ . | markdownify }}</p>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </section>
+{{ else }}
+  <section class="section pt-12 pb-10">
+    <div class="container text-center">
+      <h1 class="mb-2 text-h2 lg:text-h1">{{ .Title }}</h1>
+      {{ with .Params.banner.content }}
+        <p class="text-lg text-muted">{{ . | markdownify }}</p>
+      {{ end }}
+    </div>
+  </section>
+{{ end }}
+
+  <section class="section pt-8">
+    <div class="container">
+      <div class="row">
+
+        {{ range sort .Pages ".Params.release_date" "desc" }}
+          <div class="md:col-4 col-12 mb-8">
+            <div class="card h-full">
+              {{ with .Params.book_image }}
+                <div class="overflow-hidden">
+                  {{ partial "image" (dict
+                    "Src" .
+                    "Alt" ($.Title | printf "%s cover")
+                    "class" "w-full h-[300px] object-contain bg-gray-50"
+                    "DisplayXL" "600x"
+                    "Loading" "lazy"
+                  ) }}
+                </div>
+              {{ end }}
+              <div class="card-body">
+                <h5 class="card-title mb-2">{{ .Title }}</h5>
+                {{ with .Params.subtitle }}
+                  <p class="card-text text-muted mb-3">{{ . }}</p>
+                {{ end }}
+                {{ with .Params.authors }}
+                  <p class="text-sm mb-2">
+                    <strong>Author{{ if gt (len .) 1 }}s{{ end }}:</strong>
+                    {{ delimit (apply . "index" "." "name") ", " }}
+                  </p>
+                {{ end }}
+              </div>
+              <div class="card-footer text-center">
+                <a class="btn btn-primary" href="{{ .RelPermalink }}">Learn More</a>
+              </div>
+            </div>
+          </div>
+        {{ end }}
+      </div>
+    </div>
+  </section>
+{{ end }}

@@ -1,0 +1,66 @@
+{{ define "main" }}
+
+{{/* Hero Section */}}
+<section class="relative h-[600px]">
+  {{ partial "image" (dict
+    "Src" .Params.banner.image
+    "Alt" (.Title | printf "%s banner")
+    "class" "absolute inset-0 w-full h-full object-cover"
+    "DisplayXL" "1600x"
+  ) }}
+
+  <div class="container relative h-full flex flex-col justify-center pl-5 gap-3 z-10">
+    <h2 class="text-white text-4xl font-bold drop-shadow-lg">
+      {{ .Title }}
+    </h2>
+
+    <span class="inline-block bg-red-600 text-white text-sm rounded px-3 py-1">
+      <!-- no button needed here, but keeping placeholder if needed -->
+    </span>
+  </div>
+
+  <div class="absolute inset-0 bg-black/30"></div>
+</section>
+
+
+{{/* Certifications List */}}
+<section class="container py-10">
+  {{ $certs := site.Data.certifications }}
+  {{ $certs = sort $certs "issue_date" "desc" }}
+
+  {{ range $certs }}
+    <div class="flex items-center mb-10">
+
+      {{ if .image }}
+        <img
+          src="{{ .image }}"
+          alt="{{ .cert_title }}"
+          class="w-24 h-24 mr-8 object-contain bg-white rounded">
+      {{ else }}
+        <div class="w-24 h-24 mr-8 bg-gray-200 rounded"></div>
+      {{ end }}
+
+      <div>
+        <h3 class="text-xl font-semibold mb-1">
+          {{ if .url }}
+            <a href="{{ .url }}" target="_blank" class="text-dark no-underline">
+              {{ .cert_title }}
+            </a>
+          {{ else }}
+            {{ .cert_title }}
+          {{ end }}
+        </h3>
+
+        <p class="text-muted m-0 text-sm">
+          Issued by <strong>{{ .issued_by }}</strong>
+          {{ if .issue_date }}
+            on {{ .issue_date }}
+          {{ end }}
+        </p>
+      </div>
+
+    </div>
+  {{ end }}
+</section>
+
+{{ end }}
