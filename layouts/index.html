@@ -25,9 +25,11 @@
               {{ end }}
             {{ end }}
           </div>
+          {{ if .image }}
           <div class="col-12">
             {{ partial "image" (dict "Src" .image "Alt" "Banner image" "Loading" "eager" "class" "mx-auto lg:!max-w-[800px]" "DisplayXL" "800x" ) }}
           </div>
+          {{ end }}
         </div>
       </div>
     </section>

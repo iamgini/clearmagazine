@@ -178,14 +178,14 @@ version = "v0.1.2"
 4. Sync lockfiles
 
 ```shell
-hugo mod get github.com/iamgini/clearmagazine@v0.1.7
+hugo mod get github.com/iamgini/clearmagazine@v0.1.8
 hugo mod tidy
 git add -A
-git commit -m "Pin clearmagazine v0.1.6"
+git commit -m "Pin clearmagazine v0.1.8"
 git push
 ```
 
-5. Update theme `hugo.toml` and ensure no theme is mentioned!
+5. Update theme `hugo.toml` and ensure NO theme is mentioned!
 
 ```ini
 # theme = "hugoplate"
