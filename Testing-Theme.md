@@ -71,6 +71,45 @@ git push
 ```
 6. Local testing
 
+**Method 1 - using Dev file**
+
+Add `config/development/module.toml`.
+
+```ini
+[[module.replacements]]
+path = "github.com/iamgini/clearmagazine"
+replace = "../../clearmagazine"
+```
+
+```shell
+$  tree config/
+config/
+├── _default
+│   ├── languages.toml
+│   ├── menus.en.toml
+│   ├── module.toml
+│   └── params.toml
+└── development
+    ├── module.toml
+    └── server.toml
+
+3 directories, 6 files
+```
+
+Hugo merges:
+- `_default/module.toml`
+- `development/module.toml`
+
+Then test the site locally by passing environment.
+
+```shell
+$ hugo server --disableFastRender \
+    --cleanDestinationDir \
+    --environment development
+```
+
+**Method 2 - Using Environment variable**
+
 Export environment variable for local folder testing
 
 ```shell
