@@ -19,6 +19,7 @@ Create an annotated tag on that commit and push both commits and tags.
 ```shell
 git tag -a v0.1.3 -m "v0.1.3: card tweaks + shortcode fix"
 git push --tags
+git push origin v0.1.13
 ```
 
 That guarantees the tag points to the exact code you tested.
@@ -120,6 +121,7 @@ export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../../clearma
 Note: You don’t need the `[module] [[module.imports]]` block in `hugo.toml` if you’re using `config/_default/module.toml`. It’s redundant.
 
 ---
+
 
 ## SEO
 

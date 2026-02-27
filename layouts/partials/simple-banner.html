@@ -1,0 +1,19 @@
+{{/* layouts/partials/simple-banner.html */}}
+{{ $siteBanner := .Site.Params.banner }}
+{{ $pageDisable := .Params.banner_disable | default false }}
+
+{{ if and (not $pageDisable) $siteBanner.enable }}
+  <div id="simple-banner"
+       class="simple-banner w-full text-center text-sm py-2 px-4"
+       style="background: {{ $siteBanner.bg | default "#0f172a" }}; color: {{ $siteBanner.text | default "#ffffff" }};">
+    <div class="simple-banner-text">
+      {{ with $siteBanner.url }}
+        <a href="{{ . }}" target="{{ $siteBanner.target | default "_blank" }}" rel="noopener">
+          {{ $siteBanner.content | markdownify }}
+        </a>
+      {{ else }}
+        {{ $siteBanner.content | markdownify }}
+      {{ end }}
+    </div>
+  </div>
+{{ end }}
