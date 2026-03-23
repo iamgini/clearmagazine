@@ -77,7 +77,6 @@ Don’t tag before committing; you’ll end up tagging the previous commit.
 hugo mod get github.com/iamgini/clearmagazine@v0.1.16
 hugo mod tidy
 
-
 ````
 
 ## How to test theme in your site as Hugo Modules
