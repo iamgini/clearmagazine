@@ -8,7 +8,7 @@
        style="background: {{ $siteBanner.bg | default "#0f172a" }}; color: {{ $siteBanner.text | default "#ffffff" }};">
     <div class="simple-banner-text">
       {{ with $siteBanner.url }}
-        <a href="{{ . }}" target="{{ $siteBanner.target | default "_blank" }}" rel="noopener">
+       test <a href="{{ . }}" target="{{ $siteBanner.target | default "_blank" }}" rel="noopener">
           {{ $siteBanner.content | markdownify }}
         </a>
       {{ else }}

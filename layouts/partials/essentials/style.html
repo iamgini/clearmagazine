@@ -67,17 +67,18 @@
 
 <!-- link main style -->
 <link
-  href="{{ $styles.Permalink }}"
+
+  href="{{ $styles.RelPermalink }}"
 
   rel="stylesheet" />
 
-    <!-- href="{{ $styles.RelPermalink }}" -->
+<!-- href="{{ $styles.Permalink }}" -->
 <!-- Removed integrity check from both links-->
 <!-- integrity="{{ $styles.Data.Integrity }}" -->
 
 <!-- link lazy style -->
 <link
   rel="stylesheet"
-  href="{{ $stylesLazy.Permalink }}"
+  href="{{ $stylesLazy.RelPermalink }}"
   media="print"
   onload="this.media='all'; this.onload=null;" />
