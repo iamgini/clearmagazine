@@ -39,7 +39,7 @@
         <!-- Left: Cover + CTAs -->
         <div class="lg:col-4 md:col-5 col-12 mb-8">
           {{ with .Params.book_image }}
-            <div class="rounded-2xl shadow p-4 bg-white">
+            <div class="rounded-2xl shadow p-4">
               {{ partial "image" (dict
                 "Src" .
                 "Alt" ($p.Title | printf "%s cover")

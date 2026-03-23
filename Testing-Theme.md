@@ -3,11 +3,23 @@
 - [Testing ClearMagazine Theme](#testing-clearmagazine-theme)
   - [Step 1 — Edit \& test theme locally (no tagging yet)](#step-1--edit--test-theme-locally-no-tagging-yet)
   - [Step 2 — Happy with changes? Commit \& tag the theme](#step-2--happy-with-changes-commit--tag-the-theme)
+  - [Now in the site directory](#now-in-the-site-directory)
   - [How to test theme in your site as Hugo Modules](#how-to-test-theme-in-your-site-as-hugo-modules)
   - [SEO](#seo)
   - [Troubleshooting](#troubleshooting)
+    - [github.com/gethugothemes/hugo-modules/pwa not found](#githubcomgethugothemeshugo-modulespwa-not-found)
   - [Clean Cache](#clean-cache)
   - [Fixing Theme issues](#fixing-theme-issues)
+  - [Per-site migration checklist](#per-site-migration-checklist)
+    - [1. Git — sync staging with main first](#1-git--sync-staging-with-main-first)
+    - [2. Clean up module state](#2-clean-up-module-state)
+    - [3. Update `config/_default/module.toml`](#3-update-config_defaultmoduletoml)
+    - [4. Fix .gitignore](#4-fix-gitignore)
+    - [5. Generate and commit hugo\_stats.json](#5-generate-and-commit-hugo_statsjson)
+    - [6. Test locally](#6-test-locally)
+    - [7. Commit everything](#7-commit-everything)
+    - [8. Verify staging deploy](#8-verify-staging-deploy)
+    - [9. Merge to main when happy](#9-merge-to-main-when-happy)
 
 
 ## Step 1 — Edit & test theme locally (no tagging yet)
@@ -15,15 +27,25 @@ In your site repo, set the local replacement so Hugo uses your local theme folde
 
 ```shell
 # use the correct path where you cloned theme repo
-# export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../../clearmagazine"
-export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../clearmagazine"
+export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../../clearmagazine"
+# export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../clearmagazine"
+
+hugo server --disableFastRender --cleanDestinationDir --environment development
 ```
 
 Then run the site:
 
 ```shell
 npm install
+
+$ hugo server --disableFastRender --cleanDestinationDir 2>&1
+
+$ hugo server --disableFastRender --cleanDestinationDir 2>&1 | grep -i environment
+# or
+hugo server --disableFastRender --cleanDestinationDir --environment development --watch
+# or
 hugo server --disableFastRender --cleanDestinationDir --environment development
+
 ```
 
 ## Step 2 — Happy with changes? Commit & tag the theme
@@ -52,6 +74,19 @@ the staging branch in cloudflare build!
 
 https://c5c171db.gineesh-com-content.pages.dev/
 
+
+## Now in the site directory
+
+```shell
+# 1. Update module.toml
+# change version = "v0.1.6" to version = "v0.1.16"
+
+# 2. Pull the new version
+hugo mod get github.com/iamgini/clearmagazine@v0.1.16
+hugo mod tidy
+
+
+````
 
 ## How to test theme in your site as Hugo Modules
 
@@ -147,6 +182,8 @@ export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../clearmagaz
 
 Note: You don’t need the `[module] [[module.imports]]` block in `hugo.toml` if you’re using `config/_default/module.toml`. It’s redundant.
 
+- https://gohugo.io/hugo-modules/use-modules/#replace
+- https://gohugo.io/configuration/module/#replacements
 ---
 
 
@@ -210,6 +247,19 @@ hugo --gc --minify
 hugo mod tidy
 hugo --gc --minify
 
+### github.com/gethugothemes/hugo-modules/pwa not found
+
+```shell
+Error: command error: failed to load modules: module "github.com/gethugothemes/hugo-modules/pwa" not found in "/home/gmadappa/community/gineesh-com-content/themes/github.com/gethugothemes/hugo-modules/pwa"; either add it as a Hugo Module or store it in "/home/gmadappa/community/gineesh-com-content/themes".: module does not exist
+```
+
+Solution:
+```shell
+clearmagazine  $  hugo mod get github.com/gethugothemes/hugo-modules/pwa
+
+clearmagazine  $  hugo mod tidy
+```
+
 ## Clean Cache
 
 ```shell
@@ -250,4 +300,77 @@ $ hugo mod tidy
 hugo mod clean
 rm -rf $HOME/.cache/hugo_modules
 
+```
+
+## Per-site migration checklist
+
+### 1. Git — sync staging with main first
+
+```bash
+git checkout staging
+git fetch origin
+git merge origin/main
+git push origin staging
+```
+
+### 2. Clean up module state
+
+```bash
+rm -rf go.mod go.sum
+hugo mod init github.com/iamgini/<site-name>-content
+hugo mod get github.com/iamgini/clearmagazine@v0.1.20
+# skip hugo mod tidy !
+```
+
+### 3. Update `config/_default/module.toml`
+
+Replace everything with:
+
+```ini
+toml[hugoVersion]
+extended = true
+min = "0.144.0"
+
+[[imports]]
+path = "github.com/iamgini/clearmagazine"
+version = "v0.1.20"
+```
+
+### 4. Fix .gitignore
+
+Remove `hugo_stats.json` from `.gitignore`
+
+### 5. Generate and commit hugo_stats.json
+
+```bash
+npm install
+hugo --gc
+```
+
+### 6. Test locally
+
+```bash
+hugo server --disableFastRender --cleanDestinationDir
+```
+
+### 7. Commit everything
+
+```bash
+git add go.mod go.sum config/_default/module.toml .gitignore hugo_stats.json
+git commit -m "Migrate to clearmagazine v0.1.20, clean module setup"
+git push origin staging
+```
+
+### 8. Verify staging deploy
+
+- Check Cloudflare Pages staging build log
+- Confirm `npm install && hugo --gc --minify` is the build command
+- Visually check the site
+
+### 9. Merge to main when happy
+
+```bash
+git checkout main
+git merge staging
+git push origin main
 ```
