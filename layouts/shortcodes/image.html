@@ -1,0 +1,22 @@
+{{- $src := .Get "src" -}}
+{{- $alt := .Get "alt" | default "" -}}
+{{- $caption := .Get "caption" | default "" -}}
+{{- $class := .Get "class" | default "" -}}
+{{- $title := .Get "title" | default "" -}}
+{{- $position := .Get "position" | default "center" -}}
+
+{{- $posClass := "" -}}
+{{- if eq $position "center" }}{{- $posClass = "mx-auto" -}}{{- end -}}
+{{- if eq $position "left" }}{{- $posClass = "mr-auto" -}}{{- end -}}
+{{- if eq $position "right" }}{{- $posClass = "ml-auto" -}}{{- end -}}
+
+<figure class="{{ $posClass }}">
+  <img
+    src="{{ $src }}"
+    alt="{{ $alt }}"
+    title="{{ $title }}"
+    class="{{ $class }} {{ $posClass }}" />
+  {{- if $caption }}
+    <figcaption class="text-center text-sm text-muted mt-2">{{ $caption }}</figcaption>
+  {{- end }}
+</figure>
