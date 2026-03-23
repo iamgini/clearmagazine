@@ -67,14 +67,6 @@ That guarantees the tag points to the exact code you tested.
 Don’t tag before committing; you’ll end up tagging the previous commit.
 
 
-
-see the latest push :(
-
-the staging branch in cloudflare build!
-
-https://c5c171db.gineesh-com-content.pages.dev/
-
-
 ## Now in the site directory
 
 ```shell
