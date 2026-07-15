@@ -2,6 +2,7 @@
 
 - [Testing ClearMagazine Theme](#testing-clearmagazine-theme)
   - [Step 1 — Edit \& test theme locally (no tagging yet)](#step-1--edit--test-theme-locally-no-tagging-yet)
+  - [Step 1b — Done testing, back to normal](#step-1b--done-testing-back-to-normal)
   - [Step 2 — Happy with changes? Commit \& tag the theme](#step-2--happy-with-changes-commit--tag-the-theme)
   - [Now in the site directory](#now-in-the-site-directory)
   - [How to test theme in your site as Hugo Modules](#how-to-test-theme-in-your-site-as-hugo-modules)
@@ -21,32 +22,49 @@
     - [8. Verify staging deploy](#8-verify-staging-deploy)
     - [9. Merge to main when happy](#9-merge-to-main-when-happy)
 
-
 ## Step 1 — Edit & test theme locally (no tagging yet)
-In your site repo, set the local replacement so Hugo uses your local theme folder directly:
+
+`HUGO_MODULE_REPLACEMENTS` / `[[module.replacements]]` does **not** work for
+clearmagazine, because it doesn't resolve nested module imports (pwa, search,
+accordion, etc. — the gethugothemes/hugo-modules submodules clearmagazine
+depends on). This is a confirmed Hugo limitation, not a config mistake.
+Ref: https://github.com/gohugoio/hugo/issues/9494
+
+Use Go's own `replace` directive instead — it does full dependency-graph
+resolution, so nested imports resolve correctly.
+
+**Do this on a dedicated branch, never on `main`/`staging`:**
 
 ```shell
-# use the correct path where you cloned theme repo
-export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../../clearmagazine"
-# export HUGO_MODULE_REPLACEMENTS="github.com/iamgini/clearmagazine->../clearmagazine"
+cd <site-repo>
+git checkout -b clearmagazine-local-dev
 
-hugo server --disableFastRender --cleanDestinationDir --environment development
+# path is relative to the site repo's root
+go mod edit -replace github.com/iamgini/clearmagazine=../clearmagazine
+hugo mod tidy
+
+hugo server --disableFastRender --cleanDestinationDir
 ```
 
-Then run the site:
+Edits saved in `clearmagazine/layouts`, `assets`, etc. now live-reload in this
+`hugo server` session.
+
+## Step 1b — Done testing, back to normal
 
 ```shell
-npm install
+go mod edit -dropreplace github.com/iamgini/clearmagazine
+hugo mod tidy
 
-$ hugo server --disableFastRender --cleanDestinationDir 2>&1
+# discard any other local-dev-only changes (hugo_stats.json, go.sum, etc.)
+git checkout -- .
+git status   # confirm clean before switching branches
 
-$ hugo server --disableFastRender --cleanDestinationDir 2>&1 | grep -i environment
-# or
-hugo server --disableFastRender --cleanDestinationDir --environment development --watch
-# or
-hugo server --disableFastRender --cleanDestinationDir --environment development
-
+git checkout staging   # or main
+git branch -D clearmagazine-local-dev   # optional — delete if not reusing
 ```
+
+**Never commit the `replace` line.** If you forget and it ends up staged,
+`git checkout -- go.mod` reverts it.
 
 ## Step 2 — Happy with changes? Commit & tag the theme
 

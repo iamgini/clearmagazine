@@ -1,0 +1,65 @@
+baseURL = "http://localhost:1313/"
+title = "ClearMagazine Example Site"
+# theme = "clearmagazine"
+timeZone = "America/New_York"
+summaryLength = 10
+disableLanguages = []
+hasCJKLanguage = false
+defaultContentLanguage = 'en'
+defaultContentLanguageInSubdir = false
+
+########################## Permalinks ############################
+[permalinks.page]
+"pages" = "/:slugorcontentbasename/"
+
+########################## Pagination ############################
+[pagination]
+disableAliases = false
+pagerSize = 10
+path = 'page'
+
+############################# Outputs ############################
+[outputs]
+home     = ["HTML", "RSS"]
+page     = ["HTML", "RSS"]
+section  = ["HTML", "RSS"]
+taxonomy = ["HTML", "RSS"]
+term     = ["HTML", "RSS"]
+
+############################# Imaging ############################
+[imaging]
+quality = 80
+resampleFilter = "Lanczos"
+
+############################ Caches ##############################
+[caches]
+[caches.images]
+dir = ":resourceDir/_gen"
+maxAge = "720h"
+[caches.assets]
+dir = ":resourceDir/_gen"
+maxAge = "720h"
+
+############################ Markup ##############################
+[markup]
+[markup.goldmark.renderer]
+unsafe = true
+[markup.highlight]
+style = 'monokai'
+lineNumbersInTable = false
+[markup.tableOfContents]
+startLevel = 2
+endLevel = 5
+ordered = true
+
+############################# Plugins ##############################
+
+# CSS Plugins
+[[params.plugins.css]]
+link = "plugins/swiper/swiper-bundle.css"
+lazy = true
+
+# JS Plugins
+[[params.plugins.js]]
+link = "plugins/swiper/swiper-bundle.js"
+lazy = false
