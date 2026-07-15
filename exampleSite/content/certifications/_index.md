@@ -1,5 +1,0 @@
----
-title: "Certifications"
-banner:
-  image: ""
----
