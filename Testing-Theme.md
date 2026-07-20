@@ -38,6 +38,10 @@ resolution, so nested imports resolve correctly.
 ```shell
 cd <site-repo>
 git checkout -b clearmagazine-local-dev
+
+# if the branch already exists
+git checkout clearmagazine-local-dev
+git merge main
 ```
 In the site folder:
 
