@@ -7,9 +7,23 @@
       {{ $hasItems := gt (len (findRE "<li" $tocHTML)) 0 }}
       {{ $showTOC := and $hasItems (ne .Params.toc false) }}
 
-      <div class="row justify-center">
-        {{/* ===================== MAIN ARTICLE (centered, fixed width) ===================== */}}
-        <article class="w-full lg:col-9 xl:col-8 mx-auto">
+      <div class="row">
+        {{/* ===================== LEFT SIDEBAR (ToC) ===================== */}}
+        {{ if $showTOC }}
+          <aside class="hidden lg:block lg:col-3">
+            <div class="sticky top-24 max-h-[80vh] overflow-auto pr-4">
+              <div class="mb-3 text-xs font-semibold uppercase tracking-wide opacity-70">
+                Content
+              </div>
+              <nav class="toc-left text-sm">
+                {{ $tocHTML | safeHTML }}
+              </nav>
+            </div>
+          </aside>
+        {{ end }}
+
+        {{/* ===================== MAIN ARTICLE ===================== */}}
+        <article class="w-full {{ if $showTOC }}lg:col-9 xl:col-6{{ else }}lg:col-9 xl:col-8 mx-auto{{ end }}">
 
           <h1 class="h2 mb-3">
             {{ .Title }}
@@ -210,22 +224,14 @@
           {{ end }}
         </article>
 
-
-
-        {{/* ===================== RIGHT SIDEBAR (ToC on xl) ===================== */}}
+        {{/* ===================== RIGHT SIDEBAR (Featured + Latest) ===================== */}}
         {{ if $showTOC }}
           <aside class="hidden xl:block xl:col-3">
-            <div class="sticky top-24 text-sm max-h-[70vh] overflow-auto">
-              <div class="mb-3 text-xs font-semibold uppercase tracking-wide opacity-70">
-                ON THIS PAGE
-              </div>
-              <div class="prose-sm toc space-y-2">
-                {{ $tocHTML | safeHTML }}
-              </div>
+            <div class="pl-4">
+              {{ partial "components/sidebar-widgets" . }}
             </div>
           </aside>
         {{ end }}
-      </div>
 
       {{/* ========= RELATED POSTS =========== */}}
       {{ $related := .Site.RegularPages.Related . | first 10 }}
@@ -245,4 +251,29 @@
     </div>
   </section>
 
+  {{ if $showTOC }}
+  <script>
+    (function () {
+      const links = document.querySelectorAll('.toc-left a[href*="#"]');
+      if (!links.length) return;
+      const map = new Map();
+      links.forEach(link => {
+        const id = decodeURIComponent(link.getAttribute('href').split('#')[1]);
+        const heading = document.getElementById(id);
+        if (heading) map.set(heading, link);
+      });
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const link = map.get(entry.target);
+          if (!link) return;
+          if (entry.isIntersecting) {
+            links.forEach(l => l.classList.remove('is-active'));
+            link.classList.add('is-active');
+          }
+        });
+      }, { rootMargin: '-20% 0px -70% 0px' });
+      map.forEach((_, heading) => observer.observe(heading));
+    })();
+  </script>
+  {{ end }}
 {{ end }}
