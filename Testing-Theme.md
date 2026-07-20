@@ -1,8 +1,8 @@
-# Testing ClearMagazine Theme
+# Testing or Modifying ClearMagazine Theme
 
-- [Testing ClearMagazine Theme](#testing-clearmagazine-theme)
+- [Testing or Modifying ClearMagazine Theme](#testing-or-modifying-clearmagazine-theme)
   - [Step 1 — Edit \& test theme locally (no tagging yet)](#step-1--edit--test-theme-locally-no-tagging-yet)
-  - [Step 1b — Done testing, back to normal](#step-1b--done-testing-back-to-normal)
+  - [Step 1b — Done testing, back to normal on test site](#step-1b--done-testing-back-to-normal-on-test-site)
   - [Step 2 — Happy with changes? Commit \& tag the theme](#step-2--happy-with-changes-commit--tag-the-theme)
   - [Now in the site directory](#now-in-the-site-directory)
   - [How to test theme in your site as Hugo Modules](#how-to-test-theme-in-your-site-as-hugo-modules)
@@ -33,12 +33,15 @@ Ref: https://github.com/gohugoio/hugo/issues/9494
 Use Go's own `replace` directive instead — it does full dependency-graph
 resolution, so nested imports resolve correctly.
 
-**Do this on a dedicated branch, never on `main`/`staging`:**
+**Do this on a dedicated branch in the theme folder, never on `main`/`staging`:**
 
 ```shell
 cd <site-repo>
 git checkout -b clearmagazine-local-dev
+```
+In the site folder:
 
+```shell
 # path is relative to the site repo's root
 go mod edit -replace github.com/iamgini/clearmagazine=../clearmagazine
 hugo mod tidy
@@ -49,7 +52,7 @@ hugo server --disableFastRender --cleanDestinationDir
 Edits saved in `clearmagazine/layouts`, `assets`, etc. now live-reload in this
 `hugo server` session.
 
-## Step 1b — Done testing, back to normal
+## Step 1b — Done testing, back to normal on test site
 
 ```shell
 go mod edit -dropreplace github.com/iamgini/clearmagazine
