@@ -4,7 +4,7 @@
   - [Step 1 — Edit \& test theme locally (no tagging yet)](#step-1--edit--test-theme-locally-no-tagging-yet)
   - [Step 1b — Done testing, back to normal on test site](#step-1b--done-testing-back-to-normal-on-test-site)
   - [Step 2 — Happy with changes? Commit \& tag the theme](#step-2--happy-with-changes-commit--tag-the-theme)
-  - [Now in the site directory](#now-in-the-site-directory)
+  - [Use latest theme version - Now in the site directory](#use-latest-theme-version---now-in-the-site-directory)
   - [How to test theme in your site as Hugo Modules](#how-to-test-theme-in-your-site-as-hugo-modules)
   - [SEO](#seo)
   - [Troubleshooting](#troubleshooting)
@@ -92,14 +92,14 @@ That guarantees the tag points to the exact code you tested.
 Don’t tag before committing; you’ll end up tagging the previous commit.
 
 
-## Now in the site directory
+## Use latest theme version - Now in the site directory
 
 ```shell
 # 1. Update module.toml
-# change version = "v0.1.6" to version = "v0.1.16"
+# change version = "v0.1.6" to version = "v0.1.22"
 
 # 2. Pull the new version
-hugo mod get github.com/iamgini/clearmagazine@v0.1.16
+hugo mod get github.com/iamgini/clearmagazine@v0.1.22
 hugo mod tidy
 
 ```

@@ -181,7 +181,7 @@
               {{ end }}
             </nav>
           {{ end }}
-<!--
+        <!--
           {{/* ===================== COMMENTS ===================== */}}
           {{ if site.Config.Services.Disqus.Shortname }}
             <div class="mt-20">
@@ -197,7 +197,28 @@
               <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
               {{/* {{ template "_internal/disqus.html" . }} */}}
             </div>
-          {{ end }} -->
+          {{ end }}
+          -->
+          {{/* ===================== COMMENTS ===================== */}}
+          {{ $page := . }}
+          {{ with site.Config.Services.Disqus.Shortname }}
+            <div class="mt-20">
+              <div id="disqus_thread"></div>
+              <script>
+                var disqus_config = function () {
+                  this.page.url = {{ $page.Permalink }};
+                  this.page.identifier = {{ $page.File.UniqueID }};
+                };
+                (function() {
+                  var d = document, s = d.createElement('script');
+                  s.src = 'https://{{ . }}.disqus.com/embed.js';
+                  s.setAttribute('data-timestamp', +new Date());
+                  (d.head || d.body).appendChild(s);
+                })();
+              </script>
+              <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            </div>
+          {{ end }}
 
           {{/* ===================== Giscus COMMENTS ===================== */}}
           {{/* ===================== https://www.patrickthurmond.com/blog/2023/12/11/commenting-is-available-now-thanks-to-giscus===================== */}}
