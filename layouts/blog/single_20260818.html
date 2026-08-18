@@ -1,85 +1,11 @@
 {{ define "main" }}
-
-  {{/* ===================== GOOGLE-STYLE POST HEADER ===================== */}}
-  {{/* Plain header: title + author/date/read-time, centered, slightly wider than the article column */}}
-  <section class="pt-7">
-    <div class="container">
-      <div class="row">
-        <div class="col-12 lg:col-8 xl:col-7 mx-auto py-8 md:py-10">
-
-          <h1 class="h2 mb-3">
-            {{ .Title }}
-          </h1>
-
-          {{/* --- Resolve author name, url & image --- */}}
-          {{ $authorName := or .Params.author .Params.Author }}
-          {{ $authorSlug := $authorName | urlize }}
-          {{ $authorURL  := printf "authors/%s/" $authorSlug | relLangURL }}
-
-          {{ $authorImg := .Params.authorimage }}
-          {{ if not $authorImg }}
-            {{ with site.GetPage (printf "authors/%s" $authorSlug) }}
-              {{ $authorImg = or .Params.image (or .Params.avatar .Params.photo) }}
-            {{ end }}
-          {{ end }}
-          {{ if not $authorImg }}
-            {{ $authorImg = site.Params.defaultAuthorImage }}
-          {{ end }}
-
-          {{/* --- META (author • date • read time • categories) --- */}}
-          {{ $categories := .Params.categories }}
-          <ul class="flex flex-wrap items-center gap-4 text-sm opacity-80">
-            {{ if $authorName }}
-              <li class="flex items-center gap-2">
-                {{ with $authorImg }}
-                  <img src="{{ . | relURL }}" alt="{{ $authorName }}" class="h-8 w-8 rounded-full object-cover" />
-                {{ end }}
-                <a href="{{ $authorURL }}" class="font-medium">
-                  {{ $authorName }}
-                </a>
-              </li>
-            {{ end }}
-            <li class="flex items-center gap-1">
-              {{ time.Format ":date_long" .PublishDate }}
-            </li>
-            <li class="flex items-center gap-1">
-              &middot; {{ .ReadingTime }} {{ T "min_read" | default "min read" }}
-            </li>
-            {{ if $categories }}
-              <li class="flex items-center gap-1">
-                <i class="fa-regular fa-folder mr-1"></i>
-                {{ range $i, $p := $categories }}
-                  <a href="{{ `categories/` | relLangURL }}{{ . | urlize | lower }}/">
-                    {{ . | humanize }}{{ if ne $i (sub (len $categories) 1) }},{{ end }}
-                  </a>
-                {{ end }}
-              </li>
-            {{ end }}
-          </ul>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {{/* --- HERO IMAGE: wide, full container width - wider than the text column, like Google --- */}}
-  {{ $image:= .Params.image }}
-  {{ if $image }}
-    <div class="container">
-      <div class="mb-10">
-        {{ partial "image" (dict "Src" ($image | relURL) "Context" .Page "Alt" .Title "Class" "w-full") }}
-      </div>
-    </div>
-  {{ end }}
-
   <section class="section pt-7">
     <div class="container">
 
       {{/* Compute: only show ToC if it has items AND toc != false */}}
       {{ $tocHTML := .TableOfContents }}
       {{ $hasItems := gt (len (findRE "<li" $tocHTML)) 0 }}
-      {{/* TEMP: ToC + right sidebar disabled, article widened. Restore by removing "false" below. */}}
-      {{ $showTOC := and false (and $hasItems (ne .Params.toc false)) }}
+      {{ $showTOC := and $hasItems (ne .Params.toc false) }}
 
       <div class="row">
         {{/* ===================== LEFT SIDEBAR (ToC) ===================== */}}
@@ -97,11 +23,65 @@
         {{ end }}
 
         {{/* ===================== MAIN ARTICLE ===================== */}}
-        <article class="w-full col-12 {{ if $showTOC }}lg:col-9 xl:col-6{{ else }}lg:col-8 xl:col-7 mx-auto{{ end }}">
+        <article class="w-full {{ if $showTOC }}lg:col-9 xl:col-6{{ else }}lg:col-9 xl:col-8 mx-auto{{ end }}">
 
-          {{/* Categories now shown in the header meta row above */}}
+          <h1 class="h2 mb-3">
+            {{ .Title }}
+          </h1>
 
-          {{/* Hero image now renders above, right after the header */}}
+          {{/* --- META (author • categories • date) --- */}}
+          <ul class="mb-6 flex flex-wrap items-center gap-4 text-sm">
+
+            {{/* --- Resolve author name & URL --- */}}
+            {{ $authorName := or .Params.author .Params.Author }}
+            {{ $authorSlug := $authorName | urlize }}
+            {{ $authorURL  := printf "authors/%s/" $authorSlug | relLangURL }}
+
+            {{/* --- Try images in this order: post -> author page -> site default --- */}}
+            {{ $authorImg := .Params.authorimage }}
+            {{ if not $authorImg }}
+              {{ with site.GetPage (printf "authors/%s" $authorSlug) }}
+                {{ $authorImg = or .Params.image (or .Params.avatar .Params.photo) }}
+              {{ end }}
+            {{ end }}
+            {{ if not $authorImg }}
+              {{ $authorImg = site.Params.defaultAuthorImage }}
+            {{ end }}
+
+            <li class="flex items-center gap-2">
+              {{ with $authorImg }}
+                <img src="{{ . | relURL }}" alt="{{ $authorName }}" class="h-8 w-8 rounded-full object-cover" />
+              {{ end }}
+              <a href="{{ $authorURL }}" class="font-medium">
+                {{ $authorName }}
+              </a>
+            </li>
+
+            {{ $categories := .Params.categories }}
+            {{ if $categories }}
+              <li class="flex items-center gap-1">
+                <i class="fa-regular fa-folder mr-1"></i>
+                {{ range $i, $p := $categories }}
+                  <a href="{{ `categories/` | relLangURL }}{{ . | urlize | lower }}/">
+                    {{ . | humanize }}{{ if ne $i (sub (len $categories) 1) }},{{ end }}
+                  </a>
+                {{ end }}
+              </li>
+            {{ end }}
+
+            <li class="flex items-center gap-1">
+              <i class="fa-regular fa-clock mr-1"></i>
+              {{ time.Format ":date_long" .PublishDate }}
+            </li>
+          </ul>
+
+          {{/* --- HERO IMAGE AFTER META --- */}}
+          {{ $image:= .Params.image }}
+          {{ if $image }}
+            <div class="mb-10">
+              {{ partial "image" (dict "Src" ($image | relURL) "Context" .Page "Alt" .Title "Class" "w-full rounded") }}
+            </div>
+          {{ end }}
 
 
 
@@ -275,15 +255,15 @@
         {{ end }}
 
       {{/* ========= RELATED POSTS =========== */}}
-      {{ $related := .Site.RegularPages.Related . | first 20 }}
-      {{ $related = $related | shuffle | first 6 }}
+      {{ $related := .Site.RegularPages.Related . | first 10 }}
+      {{ $related = $related | shuffle | first 3 }}
       {{ with $related }}
         <div class="section pb-0">
           <h2 class="h3 mb-12">{{ T "related_posts" }}</h2>
           <div class="row">
             {{ range . }}
               <div class="lg:col-4 md:col-6 mb-14">
-                {{ partial "components/blog-card-compact" . }}
+                {{ partial "components/blog-card" . }}
               </div>
             {{ end }}
           </div>

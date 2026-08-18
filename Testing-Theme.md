@@ -95,7 +95,7 @@ Don’t tag before committing; you’ll end up tagging the previous commit.
 ## Use latest theme version - Now in the site directory
 
 ```shell
-# 1. Update module.toml
+# 1. Update config/_default/module.toml
 # change version = "v0.1.6" to version = "v0.1.22"
 
 # 2. Pull the new version
