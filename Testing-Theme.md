@@ -80,6 +80,8 @@ Theme repo (clearmagazine)
 ```shell
 cd clearmagazine/
 
+# merge changes to main branch as needed
+
 git add -A
 git commit -m "v0.1.X: describe what changed"
 git tag -a v0.1.X -m "v0.1.X: describe what changed"
