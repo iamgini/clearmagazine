@@ -115,24 +115,24 @@
           {{ if .Params.author }}
             {{ $authorPage := site.GetPage (printf "/authors/%s" (.Params.author | urlize)) }}
             {{ if $authorPage }}
-              <div class="border border-border dark:border-darkmode-border rounded-lg p-6 mt-12 flex flex-col items-center text-center">
+              <div class="border border-border dark:border-darkmode-border rounded-lg p-6 mt-12 flex items-center">
                 {{ $image := $authorPage.Params.image }}
                 {{ if $image }}
 
                   <img
                     src="{{ $image | relURL }}"
                     alt="{{ $authorPage.Title }}"
-                    class="mb-4 h-24 w-24 rounded-full object-cover"
+                    class="w-20 h-20 rounded-full object-cover mr-6"
                     width="250"
                     height="250"
                     />
 
                 {{ end }}
-                <div class="max-w-md">
+                <div>
                   <a href="{{ $authorPage.RelPermalink }}" >
                     <h3 class="font-bold text-lg mb-2">{{ $authorPage.Title }}</h3>
                   </a>
-                  <p class="opacity-80">
+                  <p class="text-sm opacity-80">
                     {{ $authorPage.Content | plainify }}
                   </p>
                 </div>
