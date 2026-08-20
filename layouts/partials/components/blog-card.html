@@ -9,6 +9,12 @@
       "class" "mb-6 w-full rounded object-cover h-48"
       ) }}
   </a>
+  {{ else }}
+  <a href="{{ .RelPermalink }}" class="mb-6 flex h-48 w-full items-center justify-center rounded bg-gradient-to-br from-light to-neutral-300 dark:from-darkmode-light dark:to-neutral-700">
+    <span class="px-4 text-center text-sm font-semibold uppercase tracking-wide opacity-40">
+      {{ with .Params.categories }}{{ index . 0 | humanize }}{{ else }}{{ site.Title }}{{ end }}
+    </span>
+  </a>
   {{ end }}
   <h3 class="mb-3" style="font-size: 22px;">
     <a href="{{ .RelPermalink }}">
@@ -19,8 +25,25 @@
   {{ if $categories }}
     <ul class="mb-4">
       <li class="mr-4 inline-block">
-        <a href="{{ `authors/` | relLangURL }}{{ .Params.Author | urlize }}/">
-          <i class="fa-regular fa-circle-user mr-2"></i>{{ .Params.author }}
+        {{/* --- Resolve author image: post -> author page -> site default --- */}}
+        {{ $authorSlug := .Params.author | urlize }}
+        {{ $authorImg := .Params.authorimage }}
+        {{ if not $authorImg }}
+          {{ with site.GetPage (printf "authors/%s" $authorSlug) }}
+            {{ $authorImg = or .Params.image (or .Params.avatar .Params.photo) }}
+          {{ end }}
+        {{ end }}
+        {{ if not $authorImg }}
+          {{ $authorImg = site.Params.defaultAuthorImage }}
+        {{ end }}
+
+        <a href="{{ `authors/` | relLangURL }}{{ .Params.Author | urlize }}/" class="inline-flex items-center">
+          {{ with $authorImg }}
+            <img src="{{ . | relURL }}" alt="{{ $.Params.author }}" class="mr-2 h-8 w-8 rounded-full object-cover" />
+          {{ else }}
+            <i class="fa-regular fa-circle-user mr-2"></i>
+          {{ end }}
+          {{ .Params.author }}
         </a>
       </li>
       <li class="mr-4 inline-block">

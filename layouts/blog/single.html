@@ -68,7 +68,7 @@
   {{ if $image }}
     <div class="container">
       <div class="mt-8 mb-10 md:mt-10">
-        {{ partial "image" (dict "Src" ($image | relURL) "Context" .Page "Alt" .Title "class" "w-full h-64 md:h-80 lg:h-96 object-cover object-center rounded-lg") }}
+        {{ partial "image" (dict "Src" ($image | relURL) "Context" .Page "Alt" .Title "class" "w-full aspect-[2/1] object-cover object-center rounded-lg") }}
       </div>
     </div>
   {{ end }}
