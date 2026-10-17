@@ -49,8 +49,9 @@
               <li class="flex items-center gap-1">
                 <i class="fa-regular fa-folder mr-1"></i>
                 {{ range $i, $p := $categories }}
+                  {{ $term := site.GetPage (printf "/categories/%s" (. | urlize)) }}
                   <a href="{{ `categories/` | relLangURL }}{{ . | urlize | lower }}/">
-                    {{ . | humanize }}{{ if ne $i (sub (len $categories) 1) }},{{ end }}
+                    {{ with $term }}{{ .LinkTitle }}{{ else }}{{ $p }}{{ end }}{{ if ne $i (sub (len $categories) 1) }},{{ end }}
                   </a>
                 {{ end }}
               </li>
@@ -151,14 +152,15 @@
           {{ $tags:= .Params.tags }}
           {{ if $tags }}
             <div class="mb-10">
-              <h5 class="mb-3">{{ T "tags" }} :</h5>
+              <h5 class="mb-3">{{ T "tags" }}:</h5>
               <ul class="flex flex-wrap">
                 {{ range $i,$p:= $tags }}
+                  {{ $term := site.GetPage (printf "/tags/%s" (. | urlize)) }}
                   <li>
                     <a
                       class="m-1 inline-block rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200"
                       href="{{ `tags/` | relLangURL }}{{ . | urlize | lower }}/">
-                      {{ . | humanize }}
+                      {{ with $term }}{{ .LinkTitle }}{{ else }}{{ $p }}{{ end }}
                     </a>
                   </li>
                 {{ end }}

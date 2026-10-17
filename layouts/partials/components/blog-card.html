@@ -49,16 +49,15 @@
       <li class="mr-4 inline-block">
         <i class="fa-regular fa-folder mr-1"></i>
         {{ range $i,$p:= $categories }}
+          {{ $term := site.GetPage (printf "/categories/%s" (. | urlize)) }}
           <a
             href="{{ `categories/` | relLangURL }}{{ . | urlize | lower }}/"
             class="ms-1"
-            >{{ . | humanize }}{{ if ne $i (sub (len $categories) 1) }}
-              {{ "," }}
-            {{ end }}
-          </a>
+            >{{ with $term }}{{ .LinkTitle }}{{ else }}{{ $p }}{{ end }}</a
+          >{{ if ne $i (sub (len $categories) 1) }},{{ end }}
         {{ end }}
       </li>
     </ul>
   {{ end }}
-  <p class="mb-6">{{ .Summary | plainify  | truncate 150 }}</p>
+  <p class="mb-6">{{ or .Params.excerpt .Summary | plainify | truncate 150 }}</p>
 </div>
