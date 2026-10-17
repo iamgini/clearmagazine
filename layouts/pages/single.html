@@ -1,0 +1,142 @@
+{{ define "main" }}
+
+  {{/* ===================== PAGES SINGLE - replica of blog/single.html ===================== */}}
+  {{/* Differences from blog: no date, author only if set, no author box */}}
+
+  {{/* ===================== GOOGLE-STYLE PAGE HEADER ===================== */}}
+  <section class="pt-7">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 lg:col-8 xl:col-7 mx-auto py-8 md:py-10">
+
+          <h1 class="h2 mb-3">
+            {{ .Title }}
+          </h1>
+
+          {{/* --- Resolve author name, url & image --- */}}
+          {{ $authorName := or .Params.author .Params.Author }}
+          {{ $authorSlug := $authorName | urlize }}
+          {{ $authorURL  := printf "authors/%s/" $authorSlug | relLangURL }}
+
+          {{ $authorImg := .Params.authorimage }}
+          {{ if and $authorName (not $authorImg) }}
+            {{ with site.GetPage (printf "authors/%s" $authorSlug) }}
+              {{ $authorImg = or .Params.image (or .Params.avatar .Params.photo) }}
+            {{ end }}
+          {{ end }}
+          {{ if not $authorImg }}
+            {{ $authorImg = site.Params.defaultAuthorImage }}
+          {{ end }}
+
+          {{/* --- META (author • read time • categories) - no date for pages --- */}}
+          {{ $categories := .Params.categories }}
+          {{ if or $authorName $categories }}
+            <ul class="flex flex-wrap items-center gap-4 font-normal">
+              {{ if $authorName }}
+                <li class="flex items-center gap-2">
+                  {{ with $authorImg }}
+                    <img src="{{ . | relURL }}" alt="{{ $authorName }}" class="h-8 w-8 rounded-full object-cover" />
+                  {{ end }}
+                  <a href="{{ $authorURL }}">
+                    {{ $authorName }}
+                  </a>
+                </li>
+                <li class="flex items-center gap-1">
+                  &middot; {{ .ReadingTime }} {{ T "min_read" | default "min read" }}
+                </li>
+              {{ end }}
+              {{ if $categories }}
+                <li class="flex items-center gap-1">
+                  <i class="fa-regular fa-folder mr-1"></i>
+                  {{ range $i, $p := $categories }}
+                    {{ $term := site.GetPage (printf "/categories/%s" (. | urlize)) }}
+                    <a href="{{ `categories/` | relLangURL }}{{ . | urlize | lower }}/">
+                      {{ with $term }}{{ .LinkTitle }}{{ else }}{{ $p }}{{ end }}{{ if ne $i (sub (len $categories) 1) }},{{ end }}
+                    </a>
+                  {{ end }}
+                </li>
+              {{ end }}
+            </ul>
+          {{ end }}
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{/* --- HERO IMAGE: wide, full container width - same as blog --- */}}
+  {{ $image:= .Params.image }}
+  {{ if $image }}
+    <div class="container">
+      <div class="mt-8 mb-10 md:mt-10">
+        {{ partial "image" (dict "Src" ($image | relURL) "Context" .Page "Alt" .Title "class" "w-full aspect-[2/1] object-cover object-center rounded-lg") }}
+      </div>
+    </div>
+  {{ end }}
+
+  <section class="section pt-7">
+    <div class="container">
+
+      <div class="row">
+        {{/* ===================== MAIN ARTICLE ===================== */}}
+        <article class="w-full col-12 lg:col-8 xl:col-7 mx-auto">
+
+          <div class="content mb-10">
+            {{ .Content }}
+          </div>
+
+          {{/* ===================== DISCLAIMER (small, muted, overridable per site) ===================== */}}
+          {{/* Lookup order: home page front matter -> site params -> theme default */}}
+          {{ $defaultDisclaimer := "Views expressed in articles are those of the respective authors and do not necessarily reflect the views of their employers or this site. While we aim for accuracy, please verify information before relying on it, and let us know if you spot an error." }}
+          {{ $disclaimer := or site.Home.Params.disclaimer site.Params.disclaimer $defaultDisclaimer }}
+          <div class="mb-10 rounded-lg border border-border p-6 text-sm opacity-70 dark:border-darkmode-border">
+            <strong>Disclaimer:</strong> {{ $disclaimer | markdownify }}
+          </div>
+
+          {{/* ===================== TAGS (pills) ===================== */}}
+          {{ $tags:= .Params.tags }}
+          {{ if $tags }}
+            <div class="mb-10">
+              <h5 class="mb-3">{{ T "tags" }}:</h5>
+              <ul class="flex flex-wrap">
+                {{ range $i,$p:= $tags }}
+                  {{ $term := site.GetPage (printf "/tags/%s" (. | urlize)) }}
+                  <li>
+                    <a
+                      class="m-1 inline-block rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200"
+                      href="{{ `tags/` | relLangURL }}{{ . | urlize | lower }}/">
+                      {{ with $term }}{{ .LinkTitle }}{{ else }}{{ $p }}{{ end }}
+                    </a>
+                  </li>
+                {{ end }}
+              </ul>
+            </div>
+          {{ end }}
+
+          {{/* ===================== SHARE ===================== */}}
+          <div class="mb-10 flex items-center lg:justify-end">
+            <h5 class="mr-3">{{ T "share" }}:</h5>
+            {{ partial "social-share" (dict "Context" . "Class" "share-icons" "Title" .Title "Whatsapp" false "Telegram" false "Linkedin" true "Pinterest" false "Tumblr" false "Vk" false "Reddit" false) }}
+          </div>
+
+        </article>
+      </div>
+
+      {{/* ========= RELATED POSTS (blog posts + pages) =========== */}}
+      {{ $related := .Site.RegularPages.Related . | first 20 }}
+      {{ $related = $related | shuffle | first 6 }}
+      {{ with $related }}
+        <div class="section pb-0">
+          <h2 class="h3 mb-12">{{ T "related_posts" }}</h2>
+          <div class="row">
+            {{ range . }}
+              <div class="lg:col-4 md:col-6 mb-14">
+                {{ partial "components/blog-card" . }}
+              </div>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
+    </div>
+  </section>
+{{ end }}
