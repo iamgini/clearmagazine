@@ -15,7 +15,7 @@
 }
 
 .navbar-nav {
-  @apply text-center lg:text-left;
+  @apply text-center lg:text-left lg:ml-8 xl:ml-12;
 }
 
 .nav-link {

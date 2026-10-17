@@ -22,12 +22,12 @@
     </a>
   </h3>
   {{ $categories:= .Params.categories }}
-  {{ if $categories }}
-    <ul class="mb-4">
-      <li class="mr-4 inline-block">
+  <ul class="mb-4 flex flex-wrap items-center gap-4">
+    {{ with .Params.author }}
+      <li class="flex items-center gap-2">
         {{/* --- Resolve author image: post -> author page -> site default --- */}}
-        {{ $authorSlug := .Params.author | urlize }}
-        {{ $authorImg := .Params.authorimage }}
+        {{ $authorSlug := . | urlize }}
+        {{ $authorImg := $.Params.authorimage }}
         {{ if not $authorImg }}
           {{ with site.GetPage (printf "authors/%s" $authorSlug) }}
             {{ $authorImg = or .Params.image (or .Params.avatar .Params.photo) }}
@@ -37,27 +37,29 @@
           {{ $authorImg = site.Params.defaultAuthorImage }}
         {{ end }}
 
-        <a href="{{ `authors/` | relLangURL }}{{ .Params.Author | urlize }}/" class="inline-flex items-center">
+        <a href="{{ `authors/` | relLangURL }}{{ $authorSlug }}/" class="flex items-center gap-2">
           {{ with $authorImg }}
-            <img src="{{ . | relURL }}" alt="{{ $.Params.author }}" class="mr-2 h-8 w-8 rounded-full object-cover" />
+            <img src="{{ . | relURL }}" alt="{{ $.Params.author }}" class="h-8 w-8 rounded-full object-cover" />
           {{ else }}
-            <i class="fa-regular fa-circle-user mr-2"></i>
+            <i class="fa-regular fa-circle-user"></i>
           {{ end }}
-          {{ .Params.author }}
+          {{ . }}
         </a>
       </li>
-      <li class="mr-4 inline-block">
+    {{ end }}
+    {{ if $categories }}
+      <li class="flex items-center gap-1">
         <i class="fa-regular fa-folder mr-1"></i>
         {{ range $i,$p:= $categories }}
           {{ $term := site.GetPage (printf "/categories/%s" (. | urlize)) }}
           <a
             href="{{ `categories/` | relLangURL }}{{ . | urlize | lower }}/"
-            class="ms-1"
             >{{ with $term }}{{ .LinkTitle }}{{ else }}{{ $p }}{{ end }}</a
           >{{ if ne $i (sub (len $categories) 1) }},{{ end }}
         {{ end }}
       </li>
-    </ul>
-  {{ end }}
+    {{ end }}
+  </ul>
+
   <p class="mb-6">{{ or .Params.excerpt .Summary | plainify | truncate 150 }}</p>
 </div>
